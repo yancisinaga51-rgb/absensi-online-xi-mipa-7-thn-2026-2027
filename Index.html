@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Absensi Online</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--biru:#1e3a8a;--biru2:#2563eb;--teal:#06b6d4;--hijau:#16a34a;--merah:#dc2626;--abu:#64748b}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Poppins',system-ui,sans-serif;min-height:100vh;color:#0f172a;
+    background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 55%,#06b6d4 100%);padding:16px}
+  .wrap{max-width:460px;margin:0 auto}
+  header{text-align:center;color:#fff;padding:8px 0 16px}
+  header .badge{display:inline-block;background:rgba(255,255,255,.18);padding:4px 14px;border-radius:99px;font-size:12px;letter-spacing:.5px}
+  header h1{font-size:26px;margin:8px 0 2px;font-weight:700}
+  header p{font-size:13px;opacity:.9}
+  .card{background:#fff;border-radius:22px;padding:20px;box-shadow:0 18px 40px rgba(0,0,0,.25)}
+  .clock{text-align:center;background:linear-gradient(135deg,#eff6ff,#ecfeff);border-radius:16px;padding:12px;margin-bottom:16px}
+  .clock .jam{font-size:34px;font-weight:700;color:var(--biru);letter-spacing:1px}
+  .clock .tgl{font-size:13px;color:var(--abu)}
+  label{display:block;font-size:13px;font-weight:600;margin:14px 0 6px}
+  input[type=text],input[type=password]{width:100%;padding:13px 14px;border:2px solid #e2e8f0;border-radius:12px;font:inherit;outline:none;transition:.2s}
+  input[type=text]:focus,input[type=password]:focus{border-color:var(--biru2);box-shadow:0 0 0 4px rgba(37,99,235,.12)}
+  .status{display:flex;gap:8px}
+  .status label{flex:1;margin:0;cursor:pointer}
+  .status input{display:none}
+  .status span{display:block;text-align:center;padding:10px;border:2px solid #e2e8f0;border-radius:12px;font-weight:600;font-size:14px;transition:.2s}
+  .status input:checked+span{background:var(--biru2);border-color:var(--biru2);color:#fff}
+  .cam{position:relative;background:#0f172a;border-radius:16px;overflow:hidden;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center}
+  .cam video,.cam img{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+  .cam img{transform:none}
+  .cam .ph{color:#94a3b8;text-align:center;font-size:13px;padding:12px}
+  .cam .ph b{display:block;font-size:40px}
+  .row{display:flex;gap:8px;margin-top:10px}
+  button,.btn{flex:1;border:0;border-radius:12px;padding:13px;font:inherit;font-weight:600;cursor:pointer;transition:.15s;text-align:center}
+  button:active{transform:scale(.97)}
+  .b-sec{background:#e0f2fe;color:var(--biru)}
+  .b-pri{background:linear-gradient(135deg,var(--biru2),var(--teal));color:#fff;font-size:16px;padding:15px;box-shadow:0 8px 18px rgba(37,99,235,.35)}
+  .b-pri:disabled{opacity:.6}
+  .b-green{background:var(--hijau);color:#fff}
+  .msg{margin-top:14px;padding:14px;border-radius:12px;font-size:14px;display:none}
+  .msg.ok{display:block;background:#dcfce7;color:#166534}
+  .msg.err{display:block;background:#fee2e2;color:#991b1b}
+  .foot{text-align:center;color:#fff;font-size:12px;margin-top:16px;opacity:.9}
+  .foot a{color:#fff;font-weight:600;cursor:pointer;text-decoration:underline}
+  /* panel guru */
+  .modal{position:fixed;inset:0;background:rgba(15,23,42,.6);display:none;align-items:flex-start;justify-content:center;padding:14px;overflow:auto;z-index:10}
+  .modal.show{display:flex}
+  .panel{background:#fff;border-radius:20px;padding:18px;width:100%;max-width:900px;margin:10px auto}
+  .panel h2{color:var(--biru);font-size:18px;margin-bottom:10px}
+  .stats{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .stat{flex:1;min-width:80px;text-align:center;padding:10px;border-radius:12px;background:#f1f5f9}
+  .stat b{display:block;font-size:22px;color:var(--biru)}
+  .stat small{color:var(--abu);font-size:11px}
+  .tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+  .tools input[type=text]{flex:1;min-width:120px;padding:9px 12px}
+  .tools select,.tools button{padding:9px 14px;flex:none;border-radius:10px;border:2px solid #e2e8f0;font:inherit}
+  .tools .b-green{border:0}
+  .tbl{overflow:auto;max-height:55vh;border:1px solid #e2e8f0;border-radius:12px}
+  table{border-collapse:collapse;width:100%;font-size:13px}
+  th{position:sticky;top:0;background:var(--biru);color:#fff;padding:9px;text-align:left}
+  td{padding:7px 9px;border-top:1px solid #f1f5f9}
+  td img{width:44px;height:44px;object-fit:cover;border-radius:50%;cursor:pointer}
+  .tag{padding:2px 9px;border-radius:99px;font-size:11px;font-weight:600}
+  .t-Hadir{background:#dcfce7;color:#166534}.t-Izin{background:#fef9c3;color:#854d0e}.t-Sakit{background:#fee2e2;color:#991b1b}
+  .late{color:var(--merah);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="badge" id="tahun">TA 2026/2027</span>
+    <h1>📋 Absensi Online</h1>
+    <p id="info">Kelas XI MIPA 7 · SMA Negeri 1 Raya</p>
+  </header>
+
+  <div class="card">
+    <div class="clock"><div class="jam" id="jam">--:--:--</div><div class="tgl" id="tgl">memuat tanggal…</div></div>
+
+    <label for="nama">Nama Lengkap</label>
+    <input type="text" id="nama" placeholder="Ketik nama lengkap kamu" autocomplete="off" maxlength="60">
+
+    <label>Status Kehadiran</label>
+    <div class="status">
+      <label><input type="radio" name="st" value="Hadir" checked><span>✅ Hadir</span></label>
+      <label><input type="radio" name="st" value="Izin"><span>📝 Izin</span></label>
+      <label><input type="radio" name="st" value="Sakit"><span>🤒 Sakit</span></label>
+    </div>
+
+    <label>Foto Wajah (Selfie)</label>
+    <div class="cam" id="cam"><div class="ph"><b>📸</b>Tekan tombol “Buka Kamera”<br>lalu ambil foto wajah kamu</div></div>
+    <canvas id="cv" style="display:none"></canvas>
+    <input type="file" id="file" accept="image/*" capture="user" style="display:none">
+    <div class="row">
+      <button class="b-sec" id="btnCam">📷 Buka Kamera</button>
+      <button class="b-sec" id="btnSnap" style="display:none">⭕ Ambil Foto</button>
+      <button class="b-sec" id="btnRetake" style="display:none">🔄 Ulangi</button>
+    </div>
+
+    <div class="row"><button class="b-pri" id="btnKirim">Kirim Absen</button></div>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <div class="foot">Tanggal &amp; jam dicatat otomatis oleh server (WIB)<br>
+    <a id="linkGuru">🔐 Panel Wali Kelas</a></div>
+</div>
+
+<!-- PANEL GURU -->
+<div class="modal" id="modal">
+  <div class="panel">
+    <div id="loginBox">
+      <h2>🔐 Panel Wali Kelas</h2>
+      <label>Masukkan PIN</label>
+      <input type="password" id="pin" placeholder="PIN wali kelas">
+      <div class="row"><button class="b-sec" id="btnTutup1">Tutup</button><button class="b-pri" id="btnLogin">Masuk</button></div>
+      <div class="msg" id="msg2"></div>
+    </div>
+    <div id="dataBox" style="display:none">
+      <h2>📊 Data Absensi <span id="judulKelas"></span></h2>
+      <div class="stats" id="stats"></div>
+      <div class="tools">
+        <input type="text" id="cari" placeholder="Cari nama…">
+        <select id="fTgl"></select>
+        <button class="b-green" id="btnXls">⬇ Unduh Excel</button>
+        <button class="b-sec" id="btnRefresh">↻</button>
+        <button class="b-sec" id="btnTutup2">Tutup</button>
+      </div>
+      <div class="tbl"><table><thead><tr><th>No</th><th>Foto</th><th>Tanggal</th><th>Jam</th><th>Nama</th><th>Status</th><th>Ket.</th></tr></thead><tbody id="tbody"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+let stream = null, fotoData = null, PIN = '', DATA = [];
+
+/* ---------- jam tampilan (waktu asli dicatat server) ---------- */
+function tick(){
+  const d = new Date();
+  $('jam').textContent = d.toLocaleTimeString('id-ID',{hour12:false,timeZone:'Asia/Jakarta'}).replace(/\./g,':');
+  $('tgl').textContent = d.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Jakarta'});
+}
+setInterval(tick,1000); tick();
+google.script.run.withSuccessHandler(i=>{
+  $('info').textContent = 'Kelas '+i.kelas+' · '+i.sekolah;
+  $('tahun').textContent = 'TA '+i.tahun; $('judulKelas').textContent = i.kelas;
+}).getInfo();
+
+function show(el,cls,t){ el.className='msg '+cls; el.innerHTML=t; }
+
+/* ---------- kamera ---------- */
+async function bukaKamera(){
+  $('msg').className='msg';
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640},height:{ideal:480}},audio:false});
+    const v = document.createElement('video'); v.autoplay=true; v.playsInline=true; v.muted=true; v.srcObject=stream;
+    $('cam').innerHTML=''; $('cam').appendChild(v);
+    $('btnCam').style.display='none'; $('btnSnap').style.display='block'; $('btnRetake').style.display='none';
+  }catch(e){
+    // Jika kamera langsung diblokir, pakai kamera bawaan HP lewat input file
+    $('file').click();
+  }
+}
+function tampilFoto(dataUrl){
+  fotoData = dataUrl;
+  const im = new Image(); im.src = dataUrl;
+  $('cam').innerHTML=''; $('cam').appendChild(im);
+  $('btnCam').style.display='none'; $('btnSnap').style.display='none'; $('btnRetake').style.display='block';
+}
+function stopStream(){ if(stream){stream.getTracks().forEach(t=>t.stop()); stream=null;} }
+function ambil(){
+  const v = $('cam').querySelector('video'); if(!v||!v.videoWidth) return;
+  const w = Math.min(480, v.videoWidth), h = Math.round(w*v.videoHeight/v.videoWidth);
+  const c = $('cv'); c.width=w; c.height=h;
+  const x = c.getContext('2d'); x.translate(w,0); x.scale(-1,1); x.drawImage(v,0,0,w,h);
+  stopStream(); tampilFoto(c.toDataURL('image/jpeg',0.75));
+}
+function dariFile(f){
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = e => { const im = new Image(); im.onload = ()=>{
+      const w = Math.min(480, im.width), h = Math.round(w*im.height/im.width);
+      const c = $('cv'); c.width=w; c.height=h; c.getContext('2d').drawImage(im,0,0,w,h);
+      tampilFoto(c.toDataURL('image/jpeg',0.75)); };
+    im.src = e.target.result; };
+  r.readAsDataURL(f);
+}
+$('btnCam').onclick = bukaKamera;
+$('btnSnap').onclick = ambil;
+$('btnRetake').onclick = ()=>{ fotoData=null; bukaKamera(); };
+$('file').onchange = e => dariFile(e.target.files[0]);
+
+/* ---------- kirim absen ---------- */
+$('btnKirim').onclick = ()=>{
+  const nama = $('nama').value.trim();
+  if(nama.length<3) return show($('msg'),'err','⚠️ Isi nama lengkap terlebih dahulu.');
+  if(!fotoData) return show($('msg'),'err','⚠️ Ambil foto wajah terlebih dahulu.');
+  const st = document.querySelector('input[name=st]:checked').value;
+  $('btnKirim').disabled=true; $('btnKirim').textContent='Mengirim…';
+  google.script.run.withSuccessHandler(r=>{
+    $('btnKirim').disabled=false; $('btnKirim').textContent='Kirim Absen';
+    if(r.ok){
+      show($('msg'),'ok','🎉 <b>Absen berhasil!</b><br>'+r.nama+'<br>'+r.tanggal+' · '+r.jam+' WIB<br>Status: '+r.status+' ('+r.ket+')');
+      $('nama').value=''; fotoData=null;
+      $('cam').innerHTML='<div class="ph"><b>✅</b>Terima kasih sudah absen</div>';
+      $('btnRetake').style.display='none'; $('btnCam').style.display='block';
+    } else show($('msg'),'err','❌ '+r.msg);
+  }).withFailureHandler(e=>{
+    $('btnKirim').disabled=false; $('btnKirim').textContent='Kirim Absen';
+    show($('msg'),'err','❌ Gagal terhubung: '+e.message);
+  }).submitAbsen({nama:nama,status:st,foto:fotoData});
+};
+
+/* ---------- panel guru ---------- */
+$('linkGuru').onclick = ()=>$('modal').classList.add('show');
+$('btnTutup1').onclick = $('btnTutup2').onclick = ()=>$('modal').classList.remove('show');
+$('btnLogin').onclick = ()=>{
+  PIN = $('pin').value; muat(true);
+};
+$('btnRefresh').onclick = ()=>muat(false);
+function muat(first){
+  google.script.run.withSuccessHandler(r=>{
+    if(!r.ok){ if(first) show($('msg2'),'err','❌ '+r.msg); return; }
+    DATA = r.rows; $('loginBox').style.display='none'; $('dataBox').style.display='block'; isiFilter(); render();
+  }).getData(PIN);
+}
+function isiFilter(){
+  const cur = $('fTgl').value;
+  const tg = [...new Set(DATA.map(d=>d.tanggal))].reverse();
+  $('fTgl').innerHTML = '<option value="">Semua tanggal</option>'+tg.map(t=>'<option>'+t+'</option>').join('');
+  $('fTgl').value = tg.includes(cur)?cur:'';
+}
+function render(){
+  const q = $('cari').value.toLowerCase(), t = $('fTgl').value;
+  const rows = DATA.filter(d=>(!t||d.tanggal===t)&&(!q||String(d.nama).toLowerCase().includes(q)));
+  const c = s=>rows.filter(d=>d.status===s).length;
+  const tl = rows.filter(d=>d.ket==='Terlambat').length;
+  $('stats').innerHTML = [['Total',rows.length],['Hadir',c('Hadir')],['Izin',c('Izin')],['Sakit',c('Sakit')],['Terlambat',tl]]
+    .map(x=>'<div class="stat"><b>'+x[1]+'</b><small>'+x[0]+'</small></div>').join('');
+  $('tbody').innerHTML = rows.slice().reverse().map(d=>
+    '<tr><td>'+d.no+'</td><td><img loading="lazy" src="https://drive.google.com/thumbnail?id='+d.id+'&sz=w120" onclick="window.open(\'https://drive.google.com/file/d/'+d.id+'/view\')"></td><td>'+d.tanggal+'</td><td>'+d.jam+'</td><td>'+
+    d.nama+'</td><td><span class="tag t-'+d.status+'">'+d.status+'</span></td><td class="'+(d.ket==='Terlambat'?'late':'')+'">'+d.ket+'</td></tr>').join('');
+}
+$('cari').oninput = render; $('fTgl').onchange = render;
+$('btnXls').onclick = ()=>{
+  $('btnXls').textContent='Menyiapkan…';
+  google.script.run.withSuccessHandler(r=>{
+    $('btnXls').textContent='⬇ Unduh Excel';
+    if(!r.ok) return alert(r.msg);
+    const bin = atob(r.b64), arr = new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([arr],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+    a.download = r.nama; document.body.appendChild(a); a.click(); a.remove();
+  }).withFailureHandler(e=>{ $('btnXls').textContent='⬇ Unduh Excel'; alert(e.message); }).exportExcel(PIN);
+};
+</script>
+</body>
+</html>
